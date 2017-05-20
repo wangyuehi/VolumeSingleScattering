@@ -17,7 +17,8 @@
   
   
   ### References
-  http://www.solidangle.com/research/egsr2012_volume.pdf
+  * [Physically Based Rendering(second edition)](http://www.sciencedirect.com/science/book/9780123750792)
+  * [Equi-angular Volumetric Importance Sampling](http://www.solidangle.com/research/egsr2012_volume.pdf)
   
     
 
