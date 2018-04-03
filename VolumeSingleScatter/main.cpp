@@ -1,3 +1,6 @@
+#if defined(_WIN32)
+#include <Windows.h>
+#endif
 //
 //  main.cpp
 //  RayTracer
@@ -6,8 +9,10 @@
 //  Copyright © 2016年 WangYue. All rights reserved.
 //
 //  g++ -c main.cpp
+
 #define inf 1e20
 #define eps 1e-20
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -17,7 +22,7 @@
 #include <limits>
 #include <math.h>
 #include <time.h>
-
+#include <algorithm> 
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -44,9 +49,13 @@ inline double clamp(double x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
 inline int toDisplayValue(double x){ return int( pow(clamp(x), 1.0/2.2) * 255 + .5); }
 
 void savePPM(const char *filename, int w, int h, Color *pixelColors){
-    
-    FILE *f = fopen(filename, "w");
 
+#if defined(_WIN32)
+    FILE *f;
+    fopen_s(&f, filename, "w");
+#else
+    FILE *f = fopen(filename, "w");
+#endif
     fprintf(f, "P3\n%d %d\n%d\n", w, h, 255);
     
     for (int p = 0; p < w * h; p++) {
@@ -1074,8 +1083,8 @@ void renderDBG(const int width, const int height, vector<Object*> objects, const
                 if(ClosestIntersectionObject(objects, cameraRay, t, IndexOfClosestObject)){
                     Vector3 hitPoint;
                    // pixelColor = getPixelColor_ImplicitPathTracing(objects,IndexOfClosestObject, t,cameraRay, light, 0, mode);
-                    //pixelColor = getPixelColorPointLight(objects, IndexOfClosestObject, t, cameraRay, light);
-                    pixelColor = getPixelColor_VolumeSingleScatter_point2(objects, IndexOfClosestObject, t, cameraRay, 8, volume,light);
+                    pixelColor = getPixelColorPointLight(objects, IndexOfClosestObject, t, cameraRay, light);
+                    //pixelColor = getPixelColor_VolumeSingleScatter_point2(objects, IndexOfClosestObject, t, cameraRay, 8, volume,light);
                     //pixelColor = getPixelColorWithSphereLight(objects,IndexOfClosestObject, t,cameraRay, hitPoint, Samples, mode);
                     //pixelColor = getPixelColorWithSphereLightDBG(objects, IndexOfClosestObject, t, cameraRay, light, Samples, mode);
                     //pixelColor = getPixelColorAmbientOcclusion(objects,IndexOfClosestObject, t,cameraRay, light, Samples, mode);
@@ -1102,7 +1111,7 @@ void renderDBG(const int width, const int height, vector<Object*> objects, const
 }
 
 
-int main(int argc, char *argv[]){
+int main(){
     cout << "rendering..." << endl;
     
 
@@ -1170,22 +1179,22 @@ int main(int argc, char *argv[]){
         
         
     };
-    MotionSphere mSphere[] = {
-//        MotionSphere(16.5, sphereO6,  c4, dir1, 0.0),
-//        MotionSphere(16.5, sphereO7,  c4, dir1, 0.0),
+    MotionSphere mSphere[2]
+       = {
+        MotionSphere(16.5, sphereO6,  c4, dir1, 0.0),
+        MotionSphere(16.5, sphereO7,  c4, dir1, 0.0),
+      };
 
-    
-    };
 //    bool temp1 = spheres[0].insideObject(CamPos);
 //    bool temp2 = spheres[0].insideObject(spheres[1].getSphereCenter());
-    vector<Object*> objects;
-    for (int i = 0; i< int(sizeof(mSphere)/sizeof(MotionSphere)); i++){
-        objects.push_back(&mSphere[i]);
-    }
+      vector<Object*> objects;
+//    for (int i = 0; i< int(sizeof(mSphere)/sizeof(MotionSphere)); i++){
+//       objects.push_back(&mSphere[i]);
+//    }
     for (int i = 0; i< int(sizeof(spheres)/sizeof(Sphere)); i++){
         objects.push_back((Object*)&spheres[i]);
     }
-    renderDBG(width,height, objects, "/Users/WangYue/Documents/Fall2016/ECSE689/raytracer/RayTracer/dist-step8.ppm", Cam, light, &homogeneousVolume,1, Importance_Solid_Angle,4, Jittered);
+    renderDBG(width,height, objects, "D:/Yue/VolumeSingleScattering/dist-step8.ppm", Cam, light, &homogeneousVolume,1, Importance_Solid_Angle,4, Jittered);
 
     return 0;
 

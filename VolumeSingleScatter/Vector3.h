@@ -9,8 +9,10 @@
 #ifndef Vector3_h
 #define Vector3_h
 
-
-
+#if defined(_WIN64) ||defined(_WIN32)
+/* Microsoft Windows  */
+#define M_PI 3.14159265358979323846264
+#endif
 
 
 
